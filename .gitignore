@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.venv/
+# 本地配置和数据，别提交
+config.toml
+archive/
+inbox/
+*.eml
+*.pdf
+*.ofd
+ledger*.csv
+ledger*.txt
+_failed/

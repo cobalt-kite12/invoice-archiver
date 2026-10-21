@@ -1,0 +1,40 @@
+# invoice-archiver 配置示例。复制为 config.toml 后按需修改。
+# 不要在这里写任何密码 / token。
+
+[archive]
+# 归档根目录。可以直接指向网盘的本地同步文件夹（Google Drive / OneDrive / iCloud / 坚果云等），
+# 文件写进去后由网盘客户端同步，本工具不需要任何网盘凭据。
+output_dir = "./archive"
+# 台账 CSV（相对 output_dir），按发票号去重
+ledger = "ledger.csv"
+# 1 = 按自然月归档；21 = 每月 21 日至次月 20 日归入次月（适合固定报销周期）
+cycle_start_day = 1
+# 可选：额外复制一份到这些目录（同样按 YYYY-MM 分文件夹）
+mirror_dirs = []
+# 处理失败的邮件记在这里（failures.csv + 未处理的 PDF），相对 output_dir
+failed_dir = "_failed"
+
+[source]
+# eml：读取 eml_dir 下的 *.eml；imap：直接读邮箱
+type = "eml"
+eml_dir = "./inbox"
+
+[imap]
+host = "imap.example.com"
+port = 993
+username = "you@example.com"
+# 密码 / 授权码从这个环境变量读取
+password_env = "INVOICE_IMAP_PASSWORD"
+folder = "INBOX"
+# 每次只看最近多少天的邮件（已处理过的邮件会自动跳过）
+since_days = 30
+
+[nuonuo]
+# 邮件只有诺诺网「下载发票」链接、没有附件时，自动取回 PDF
+enabled = true
+timeout = 30
+retries = 5
+
+# 可选：项目名称修正（左边是解析出来的，右边是想要的）
+[item_aliases]
+# "收派服务" = "收派服务费"
