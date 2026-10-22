@@ -1,0 +1,61 @@
+name: 版式适配请求 / Layout support request
+description: 某个平台的发票解析不准或读不出来 / An invoice layout isn't parsed correctly
+labels: [layout]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        不同开票平台的 PDF 版式差别很大，提供 `pdftotext -layout` 的输出就能帮忙适配。
+        Layouts differ a lot between platforms; the `pdftotext -layout` output is enough for us to add support.
+
+        ⚠️ **提交前请先打码 / Redact before posting**：
+        - 姓名、单位名称 / personal and company names
+        - 纳税人识别号（税号）/ taxpayer IDs
+        - 手机号、邮箱、地址 / phone numbers, emails, addresses
+        - 发票号码 / invoice numbers
+        - 金额（如果敏感）/ amounts, if sensitive
+
+        打码时保留**版式和字段名**（如「项目名称」「价税合计」「开票日期」），把具体值换成 `XXXX` 或同长度的假数据即可。
+        Keep the **layout and field labels**; replace the values with `XXXX` or fake data of the same length.
+
+        **不要上传 PDF 原件。/ Please do not upload the original PDF.**
+  - type: input
+    id: platform
+    attributes:
+      label: 开票平台 / 发票类型 / Platform & invoice type
+      placeholder: 例如：某出行平台网约车发票 / 某快递电子发票 / 加油站全电发票
+    validations:
+      required: true
+  - type: textarea
+    id: parsed
+    attributes:
+      label: 当前解析结果 / Current result
+      description: "`python -m invoice_archiver parse 发票.pdf` 的输出（打码后）/ output of the `parse` command (redacted)"
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果 / Expected result
+      placeholder: |
+        项目：收派服务费
+        金额：8.00
+        开票日期：2026-10-09
+    validations:
+      required: true
+  - type: textarea
+    id: pdftotext
+    attributes:
+      label: 打码后的 pdftotext 输出 / Redacted pdftotext output
+      description: "`pdftotext -layout 发票.pdf -`，请保留空格和换行 / keep spacing and line breaks"
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 隐私确认 / Privacy
+      options:
+        - label: 我已打码姓名、税号、手机号、邮箱、地址和发票号码（以及敏感金额）/ I have redacted names, tax IDs, phone numbers, emails, addresses and invoice numbers (and sensitive amounts)
+          required: true

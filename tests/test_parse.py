@@ -78,13 +78,13 @@ class WrappedItemTest(unittest.TestCase):
     def test_wrapped_at_line_start(self):
         from invoice_archiver.parse import _item
         text = ("     项目名称      单 价    数 量    金 额\n"
-                "*交通运输服务*客运服     16.02    1    16.02   3%   0.48\n"
+                "*交通运输服务*客运服     10.30    1    10.00   3%   0.30\n"
                 "务费\n"
-                "       合     计          ¥15.24          ¥0.46\n")
+                "       合     计          ¥10.00          ¥0.30\n")
         self.assertEqual(_item(text), "客运服务费")
 
     def test_roman_numeral_and_bracket(self):
         from invoice_archiver.parse import _item
-        text = ("*汽油*95号车用汽油(ⅥB      升    32.9    8.07   265.49   13%   34.51\n"
+        text = ("*汽油*95号车用汽油(ⅥB      升    20.0    7.50   132.74   13%   17.26\n"
                 ")\n")
         self.assertEqual(_item(text), "95号车用汽油(ⅥB)")

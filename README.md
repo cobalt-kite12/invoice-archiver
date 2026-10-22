@@ -4,6 +4,12 @@
 这个小工具把这件事自动化：**邮件来一封，处理一封**——取出 PDF 发票，读出项目、金额、开票日期、发票号码，
 按统一规则改名，放进按月份分好的文件夹，并记一本 CSV 台账防止重复。
 
+*English summary: [below](#english).*
+
+![归档效果演示（全部为虚构数据）](docs/demo.png)
+
+<sub>上图是用虚构发票真实跑一遍命令的结果（停车、打车 + 行程单、快递 + 运单明细、加油、同名不同号、重复转发），由 [`docs/make_demo.py`](docs/make_demo.py) 生成。</sub>
+
 - 只依赖 Python 3.11+ 标准库和 `pdftotext`（poppler-utils），没有第三方 Python 包
 - 邮件来源：本地 `.eml` 文件 / 目录，或 IMAP 邮箱（只读，不改邮件状态）
 - 只要 PDF，OFD / XML 一律忽略
@@ -45,7 +51,7 @@ brew install poppler
 # Debian / Ubuntu
 sudo apt install poppler-utils
 
-git clone <本仓库地址> && cd invoice-archiver
+git clone https://github.com/cobalt-kite12/invoice-archiver.git && cd invoice-archiver
 pip install .            # 或者不安装，直接 python -m invoice_archiver
 ```
 
@@ -126,7 +132,7 @@ python -m invoice_archiver nuonuo https://nnfp.jss.com.cn/XXXXXXXX out.pdf
 
 - 读不出关键字段 → 不归档，PDF 原样放进 `_failed/` 并写一行原因，手动处理即可
 - 项目名称被折行读错（例如 `收派服务` 少了 `费`）→ 在配置里加 `[item_aliases]` 修正
-- 欢迎提 issue 附上**打码后**的 `pdftotext -layout` 输出，帮忙适配更多版式
+- 欢迎用「[版式适配请求](https://github.com/cobalt-kite12/invoice-archiver/issues/new?template=layout_request.yml)」提 issue，附上**打码后**的 `pdftotext -layout` 输出，帮忙适配更多版式
 
 ## 开发
 
@@ -145,18 +151,25 @@ python3 -m unittest discover -s tests -t .
 
 ## English
 
-**invoice-archiver** files Chinese e-invoices (电子发票) that arrive by email.
+**invoice-archiver** automatically files Chinese e-invoices (电子发票 / fapiao) that arrive by email, so monthly expense reports stop being a hunt through your inbox.
 
-- Reads `.eml` files or an IMAP mailbox (read-only)
+- Reads `.eml` files or an IMAP mailbox (read-only; mail flags are never changed)
 - Keeps PDFs only (ignores OFD/XML); fetches PDFs for link-only invoices from Nuonuo (诺诺网)
 - Parses each invoice with `pdftotext` for item, total, issue date and invoice number
 - Saves it as `ITEM-AMOUNT-MMDD.pdf` in `YYYY-MM/` folders. Ride-hailing trip sheets (行程单) and courier waybill details (运单明细) are kept next to their invoice, with a suffix added to the name.
-- Deduplicates by invoice number using a CSV ledger
-- Point `output_dir` at any locally synced cloud folder; no cloud credentials are needed
-- Silent on success. Failures go to `_failed/failures.csv` and the command exits non-zero.
+- Deduplicates by invoice number using a CSV ledger; same name but different invoice number gets `-2`, `-3`
+- Point `output_dir` at any locally synced cloud folder (Google Drive, OneDrive, iCloud…); no cloud credentials are needed
+- Silent on success. Failures go to `_failed/failures.csv` and the command exits non-zero, which suits cron jobs.
 
 Requirements: Python 3.11+ and poppler-utils. No third-party Python packages.
-Quick start: `cp config.example.toml config.toml && python -m invoice_archiver eml path/to/mails -c config.toml -v`.
-Tests: `python3 -m unittest discover -s tests -t .` (synthetic data only).
+
+```bash
+git clone https://github.com/cobalt-kite12/invoice-archiver.git && cd invoice-archiver
+cp config.example.toml config.toml        # set output_dir
+python -m invoice_archiver eml path/to/mails/ -c config.toml -v
+```
+
+Tests: `python3 -m unittest discover -s tests -t .` (synthetic data only; the demo image above is generated from synthetic invoices too).
+Invoice layouts vary a lot. If one of yours isn't parsed correctly, open a *layout support request* issue with **redacted** `pdftotext -layout` output.
 
 License: MIT.

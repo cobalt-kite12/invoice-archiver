@@ -1,0 +1,60 @@
+name: 问题反馈 / Bug report
+description: 工具运行出错或结果不对 / Something crashed or produced a wrong result
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！**请勿粘贴任何真实发票、邮件原文、邮箱地址、手机号、姓名、税号或授权码。**
+        Thanks! **Do not paste real invoices, raw emails, email addresses, phone numbers, names, tax IDs or passwords.**
+
+        如果是「某种发票版式解析不准」，请改用「版式适配请求」模板。
+        If an invoice layout is parsed incorrectly, please use the *layout support request* template instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么 / What happened
+      description: 实际结果和期望结果 / Actual vs. expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤 / Steps to reproduce
+      placeholder: |
+        1. python -m invoice_archiver eml ... -c config.toml -v
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: 命令输出 / Output
+      description: 终端输出或 `_failed/failures.csv` 相关行（请先打码）/ Terminal output or the relevant `_failed/failures.csv` line (redact first)
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: 版本 / Version
+      description: "`python -m invoice_archiver --version`"
+  - type: input
+    id: env
+    attributes:
+      label: 环境 / Environment
+      placeholder: macOS 15 / Ubuntu 24.04, Python 3.12, poppler 24.x
+  - type: dropdown
+    id: source
+    attributes:
+      label: 邮件来源 / Mail source
+      options:
+        - .eml 文件 / .eml files
+        - IMAP
+        - 诺诺网链接 / Nuonuo link
+        - 其他 / Other
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 隐私确认 / Privacy
+      options:
+        - label: 我确认以上内容不含真实姓名、手机号、邮箱、税号、发票号码或授权码 / I confirm nothing above contains real names, phone numbers, emails, tax IDs, invoice numbers or passwords
+          required: true
