@@ -103,16 +103,21 @@ def _amount(text: str) -> Decimal | None:
 
 def _item(text: str) -> str | None:
     """取第一条「*分类*名称」，去掉分类前缀；处理名称被折到下一行的情况。"""
+    chars = rf"{_CJK}A-Za-z0-9（）()·\-\u2160-\u217f"
     lines = text.splitlines()
     for i, line in enumerate(lines):
-        m = re.search(rf"\*[^*\s]+\*\s*([{_CJK}A-Za-z0-9（）()·\-]+)", line)
+        m = re.search(rf"\*[^*\s]+\*\s*([{chars}]+)", line)
         if not m:
             continue
         name = m.group(1)
         col = m.start(1)
-        # 版式输出里，折行的剩余部分通常出现在下一行相同列附近
+        # 折行的剩余部分：要么单独占一行（真实电子发票常顶格），要么在下一行相同列附近
         for nxt in lines[i + 1:i + 3]:
             if not nxt.strip() or "*" in nxt:
+                break
+            toks = nxt.split()
+            if len(toks) == 1 and re.fullmatch(rf"[{chars}]{{1,8}}", toks[0]):
+                name += toks[0]
                 break
             frag = nxt[max(0, col - 2):col + len(name) + 4].strip()
             first = frag.split()[0] if frag.split() else ""

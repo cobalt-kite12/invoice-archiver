@@ -70,3 +70,21 @@ class NamingTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WrappedItemTest(unittest.TestCase):
+    """真实电子发票里，项目名称折行后常顶格单独占一行。"""
+
+    def test_wrapped_at_line_start(self):
+        from invoice_archiver.parse import _item
+        text = ("     项目名称      单 价    数 量    金 额\n"
+                "*交通运输服务*客运服     16.02    1    16.02   3%   0.48\n"
+                "务费\n"
+                "       合     计          ¥15.24          ¥0.46\n")
+        self.assertEqual(_item(text), "客运服务费")
+
+    def test_roman_numeral_and_bracket(self):
+        from invoice_archiver.parse import _item
+        text = ("*汽油*95号车用汽油(ⅥB      升    32.9    8.07   265.49   13%   34.51\n"
+                ")\n")
+        self.assertEqual(_item(text), "95号车用汽油(ⅥB)")
